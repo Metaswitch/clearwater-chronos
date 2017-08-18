@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# WARNING - NON-STANDARD BEHAVOUR INCOMING
+# WARNING - NON-STANDARD "RESTART" BEHAVOUR INCOMING
 #
 # Contrary to its name and position in the filesystem, this script does NOT
 # restart chronos.  Instead it considers if the chronos shared configuration
@@ -16,7 +16,7 @@ CHRONOS_CONF=/etc/chronos/chronos_shared.conf
 
 # Generate the related Chronos configuration
 TMPFILE=$(mktemp)
-echo "[dns]" > $TMPFILE
+echo "[dns]" >> $TMPFILE
 for server in $signaling_dns_server
 do
   echo servers = $server >> $TMPFILE
@@ -34,7 +34,7 @@ done
 if [[ ! -f $CHRONOS_CONF || ! cmp $TMPFILE $CHRONOS_CONF ]]
 then
   mv $TMPFILE $CHRONOS_CONF
-  cw-upload_chronos_shared_config
+  /usr/share/clearwater/clearwater-config-manager/scripts/upload_chronos_shared_config
 else
   rm $TMPFILE
 fi
