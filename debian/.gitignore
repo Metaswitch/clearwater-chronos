@@ -1,6 +1,7 @@
 /*/
 /*.debhelper.*
 /*.substvars
+/files
 /debhelper-build-stamp
 /copyright
 /changelog
