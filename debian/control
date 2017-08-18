@@ -1,0 +1,13 @@
+Source: clearwater-chronos
+Section: network
+Priority: optional
+Maintainer: Project Clearwater Maintainers <maintainers@projectclearwater.org>
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.2
+Homepage: http://projectclearwater.org/
+
+Package: clearwater-chronos
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends} clearwater-infrastructure, chronos
+Description: Integration layer between Project Clearwater and Chronos.

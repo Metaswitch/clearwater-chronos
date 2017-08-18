@@ -1,0 +1,40 @@
+#!/bin/bash -e
+
+# WARNING - NON-STANDARD "RESTART" BEHAVOUR INCOMING
+#
+# Contrary to its name and position in the filesystem, this script does NOT
+# restart chronos.  Instead it considers if the chronos shared configuration
+# should be updated based on the current global shared configuration and, if
+# so, uploads the new configuration to etcd (which will later restart the
+# chronos instance after queue manager has done its thing).
+
+IFS=,
+CHRONOS_CONF=/etc/chronos/chronos_shared.conf
+
+# Read the up-to-date global configuration
+. /etc/clearwater/config
+
+# Generate the related Chronos configuration
+TMPFILE=$(mktemp)
+echo "[dns]" >> $TMPFILE
+for server in $signaling_dns_server
+do
+  echo servers = $server >> $TMPFILE
+done
+
+echo >> $TMPFILE
+echo "[sites]" >> $TMPFILE
+echo local_site = ${local_site_name:-site1} >> $TMPFILE
+for site in $site_names
+do
+  echo "remote_site = $site=chronos.$site.$home_domain" >> $TMPFILE
+done
+
+# If the config has changed, upload it to etcd
+if [[ ! -f $CHRONOS_CONF || ! cmp $TMPFILE $CHRONOS_CONF ]]
+then
+  mv $TMPFILE $CHRONOS_CONF
+  /usr/share/clearwater/clearwater-config-manager/scripts/upload_chronos_shared_config
+else
+  rm $TMPFILE
+fi
