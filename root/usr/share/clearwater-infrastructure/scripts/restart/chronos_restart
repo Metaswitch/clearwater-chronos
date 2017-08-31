@@ -16,6 +16,7 @@ CHRONOS_CONF=/etc/chronos/chronos_shared.conf
 
 # Generate the related Chronos configuration
 TMPFILE=$(mktemp)
+chmod +r $TMPFILE
 echo "[dns]" >> $TMPFILE
 for server in $signaling_dns_server
 do
@@ -31,7 +32,7 @@ do
 done
 
 # If the config has changed, upload it to etcd
-if [[ ! -f $CHRONOS_CONF || ! cmp $TMPFILE $CHRONOS_CONF ]]
+if [[ ! -f $CHRONOS_CONF ]] || ! cmp $TMPFILE $CHRONOS_CONF
 then
   mv $TMPFILE $CHRONOS_CONF
   /usr/share/clearwater/clearwater-config-manager/scripts/upload_chronos_shared_config
